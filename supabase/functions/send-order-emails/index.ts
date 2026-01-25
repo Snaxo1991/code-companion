@@ -31,7 +31,7 @@ interface OrderEmailRequest {
   items: OrderItem[];
 }
 
-const ADMIN_EMAIL = "order@snaxo.online";
+const ADMIN_EMAIL = "divansabir06@gmail.com";
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
