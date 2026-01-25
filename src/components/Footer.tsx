@@ -48,7 +48,7 @@ export function Footer() {
             <h4 className="font-display font-semibold">Följ oss</h4>
             <div className="flex gap-4">
               <a 
-                href="https://instagram.com/snaxo.se" 
+                href="https://instagram.com/snaxo2025" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -56,7 +56,7 @@ export function Footer() {
                 <Instagram className="h-5 w-5" />
               </a>
               <a 
-                href="https://tiktok.com/@snaxo.se" 
+                href="https://tiktok.com/@snaxo2025" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -66,7 +66,7 @@ export function Footer() {
                 </svg>
               </a>
             </div>
-            <p className="text-sm text-muted-foreground">@snaxo.se</p>
+            <p className="text-sm text-muted-foreground">@snaxo2025</p>
           </div>
         </div>
 
