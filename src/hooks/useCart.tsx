@@ -113,7 +113,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const deliveryFee = deliveryArea ? DELIVERY_FEES[deliveryArea] : 0;
+  const deliveryFee = deliveryArea && DELIVERY_FEES[deliveryArea] ? DELIVERY_FEES[deliveryArea] : 0;
   const priorityFee = deliverySpeed === 'priority' ? PRIORITY_FEE : 0;
   const total = subtotal + deliveryFee + priorityFee;
 
