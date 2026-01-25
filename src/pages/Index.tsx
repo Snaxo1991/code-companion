@@ -1,19 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Zap } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/Logo';
-import { AreaSelector } from '@/components/AreaSelector';
 import { ProductCard } from '@/components/ProductCard';
 import { BottomNav } from '@/components/BottomNav';
-import { useDeliveryArea } from '@/hooks/useDeliveryArea';
 import { supabase } from '@/integrations/supabase/client';
-
-interface DeliveryArea {
-  id: string;
-  name: string;
-  fee: number;
-}
 
 interface Product {
   id: string;
@@ -28,49 +20,39 @@ interface Product {
 
 export default function Index() {
   const navigate = useNavigate();
-  const { selectedArea } = useDeliveryArea();
-  const [areas, setAreas] = useState<DeliveryArea[]>([]);
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const [areasRes, productsRes] = await Promise.all([
-        supabase.from('delivery_areas').select('*'),
-        supabase.from('products').select('*').eq('is_popular', true).limit(4),
-      ]);
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_popular', true)
+        .limit(4);
 
-      if (areasRes.data) setAreas(areasRes.data);
-      if (productsRes.data) setPopularProducts(productsRes.data);
+      if (data) setPopularProducts(data);
       setLoading(false);
     }
     fetchData();
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-background to-background pb-20">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
-        <div className="relative px-6 pt-6 pb-8">
-          <Logo size="xl" showTagline className="mb-6" />
-
-          <div className="glass-card p-6 rounded-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Zap className="h-5 w-5 text-primary" />
-              <h2 className="font-semibold">Välj leveransområde</h2>
-            </div>
-
-            {loading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-14 bg-muted animate-pulse rounded-lg" />
-                ))}
-              </div>
-            ) : (
-              <AreaSelector areas={areas} />
-            )}
-          </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-200/80 via-orange-100/50 to-background" />
+        <div className="relative px-6 pt-10 pb-10 flex flex-col items-center">
+          <Logo size="hero" showTagline className="mb-8" />
+          
+          <Button
+            size="lg"
+            className="w-full max-w-sm h-14 text-lg font-bold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
+            onClick={() => navigate('/menu')}
+          >
+            Beställ nu! 🛵
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
         </div>
       </div>
 
@@ -111,24 +93,6 @@ export default function Index() {
               />
             ))}
           </div>
-        )}
-      </section>
-
-      {/* CTA */}
-      <section className="px-6 pb-8">
-        <Button
-          size="lg"
-          className="w-full h-14 text-lg font-bold"
-          onClick={() => navigate('/menu')}
-          disabled={!selectedArea}
-        >
-          {selectedArea ? 'Se hela menyn' : 'Välj område först'}
-          <ArrowRight className="h-5 w-5 ml-2" />
-        </Button>
-        {!selectedArea && (
-          <p className="text-center text-sm text-muted-foreground mt-2">
-            Välj ett leveransområde ovan för att fortsätta
-          </p>
         )}
       </section>
 
