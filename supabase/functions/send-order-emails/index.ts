@@ -58,7 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
       )
       .join("");
 
-    const deliverySpeedText = order.deliverySpeed === "priority" ? "Prioriterad (30-45 min)" : "Standard (45-60 min)";
+    const deliverySpeedText = order.deliverySpeed === "priority" ? "Prioriterad (10-20 min)" : "Standard (20-30 min)";
 
     const customerEmailHtml = `
       <!DOCTYPE html>
