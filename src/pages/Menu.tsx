@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Search, MapPin } from 'lucide-react';
+import { Search, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/Logo';
 import { ProductCard } from '@/components/ProductCard';
 import { CategoryTabs } from '@/components/CategoryTabs';
 import { BottomNav } from '@/components/BottomNav';
-import { useDeliveryArea } from '@/hooks/useDeliveryArea';
 import { supabase } from '@/integrations/supabase/client';
 
 type Category = 'all' | 'drycker' | 'fryst' | 'snacks' | 'deals';
@@ -23,7 +22,6 @@ interface Product {
 }
 
 export default function Menu() {
-  const { selectedArea } = useDeliveryArea();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<Category>('all');
@@ -48,28 +46,33 @@ export default function Menu() {
   });
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-background to-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border">
-        <div className="px-6 py-4">
+      <div className="sticky top-0 z-40 bg-gradient-to-b from-orange-100/95 to-background/95 backdrop-blur-lg border-b border-border/50">
+        <div className="px-5 py-4">
+          {/* Friendly header */}
           <div className="flex items-center justify-between mb-4">
             <Logo size="sm" />
-            {selectedArea && (
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span>{selectedArea.name}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Snabb leverans!</span>
+            </div>
+          </div>
+
+          {/* Welcome message */}
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold text-foreground">Vad suger du på idag? 😋</h1>
+            <p className="text-muted-foreground text-sm mt-1">Välj bland våra godsaker!</p>
           </div>
 
           {/* Search */}
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              placeholder="Sök produkter..."
+              placeholder="🔍 Sök efter snacks, drycker..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-secondary border-none"
+              className="pl-12 h-12 bg-card border-2 border-border/50 rounded-2xl text-base focus:border-primary shadow-sm"
             />
           </div>
 
@@ -82,15 +85,17 @@ export default function Menu() {
       </div>
 
       {/* Products */}
-      <section className="px-6 py-6">
+      <section className="px-5 py-6">
         {loading ? (
           <div className="grid grid-cols-2 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-48 bg-muted animate-pulse rounded-xl" />
+              <div key={i} className="h-56 bg-card animate-pulse rounded-2xl" />
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🤔</div>
+            <h3 className="text-xl font-bold mb-2">Hoppsan!</h3>
             <p className="text-muted-foreground">
               Inga produkter hittades {searchQuery && `för "${searchQuery}"`}
             </p>

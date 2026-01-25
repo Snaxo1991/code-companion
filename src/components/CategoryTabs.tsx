@@ -17,19 +17,19 @@ const categories: { value: Category; label: string; emoji: string }[] = [
 
 export function CategoryTabs({ activeCategory, onCategoryChange }: CategoryTabsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
       {categories.map(({ value, label, emoji }) => (
         <button
           key={value}
           onClick={() => onCategoryChange(value)}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all',
+            'flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all shadow-sm',
             activeCategory === value
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-md scale-105'
+              : 'bg-card text-foreground hover:bg-card/80 border border-border/50'
           )}
         >
-          <span>{emoji}</span>
+          <span className="text-lg">{emoji}</span>
           <span>{label}</span>
         </button>
       ))}
