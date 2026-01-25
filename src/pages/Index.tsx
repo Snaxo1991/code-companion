@@ -51,9 +51,9 @@ export default function Index() {
     <div className="min-h-screen bg-background pb-20">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
-        <div className="relative px-6 pt-12 pb-8">
-          <Logo size="xl" showTagline className="mb-8" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
+        <div className="relative px-6 pt-6 pb-8">
+          <Logo size="xl" showTagline className="mb-6" />
 
           <div className="glass-card p-6 rounded-2xl">
             <div className="flex items-center gap-2 mb-4">

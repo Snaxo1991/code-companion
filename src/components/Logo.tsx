@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import snaxoLogo from '@/assets/snaxo-logo.png';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -7,20 +8,22 @@ interface LogoProps {
 }
 
 const sizeClasses = {
-  sm: 'text-2xl',
-  md: 'text-4xl',
-  lg: 'text-5xl',
-  xl: 'text-7xl',
+  sm: 'h-12',
+  md: 'h-20',
+  lg: 'h-28',
+  xl: 'h-40',
 };
 
 export function Logo({ size = 'md', showTagline = false, className }: LogoProps) {
   return (
-    <div className={cn('text-center', className)}>
-      <h1 className={cn('font-black tracking-tight gradient-text', sizeClasses[size])}>
-        SNAXO
-      </h1>
+    <div className={cn('flex flex-col items-center', className)}>
+      <img 
+        src={snaxoLogo} 
+        alt="SNAXO - Snacksleverans" 
+        className={cn('object-contain', sizeClasses[size])}
+      />
       {showTagline && (
-        <p className="text-muted-foreground text-sm mt-1 tracking-widest uppercase">
+        <p className="text-muted-foreground text-sm mt-2 tracking-widest uppercase font-medium">
           Tugga nu, tänk sen
         </p>
       )}
