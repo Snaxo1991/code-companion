@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "resend";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -9,29 +10,12 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-interface OrderItem {
-  product_name: string;
-  quantity: number;
-  price: number;
-}
-
-interface OrderEmailRequest {
+interface SendEmailRequest {
   orderNumber: string;
-  customerName: string;
   customerEmail: string;
-  customerPhone: string;
-  deliveryAddress: string;
-  deliveryArea: string;
-  deliverySpeed: string;
-  deliveryFee: number;
-  priorityFee: number;
-  subtotal: number;
-  total: number;
-  notes: string | null;
-  items: OrderItem[];
 }
 
-const ADMIN_EMAIL = "divansabir06@gmail.com";
+const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") || "divansabir06@gmail.com";
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -40,25 +24,89 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const order: OrderEmailRequest = await req.json();
-
-    // Validate required fields
-    if (!order.customerEmail || !order.orderNumber) {
-      throw new Error("Missing required fields");
+    // Verify authorization header exists
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: Missing or invalid authorization header" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
-    const itemsHtml = order.items
+    // Parse request body
+    const body: SendEmailRequest = await req.json();
+    const { orderNumber, customerEmail } = body;
+
+    // Validate required fields
+    if (!orderNumber || !customerEmail) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields: orderNumber and customerEmail" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!emailRegex.test(customerEmail)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Create Supabase client with service role to verify order exists
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+    // Verify order exists and email matches (prevents sending to arbitrary emails)
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .select(`
+        *,
+        delivery_areas!inner(name)
+      `)
+      .eq("order_number", orderNumber)
+      .eq("customer_email", customerEmail.toLowerCase())
+      .single();
+
+    if (orderError || !order) {
+      console.error("Order verification failed:", orderError);
+      return new Response(
+        JSON.stringify({ error: "Order not found or email mismatch" }),
+        { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Get order items
+    const { data: orderItems, error: itemsError } = await supabase
+      .from("order_items")
+      .select("*")
+      .eq("order_id", order.id);
+
+    if (itemsError) {
+      console.error("Failed to fetch order items:", itemsError);
+      return new Response(
+        JSON.stringify({ error: "Failed to fetch order items" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Build email content from verified database data
+    const itemsHtml = (orderItems || [])
       .map(
         (item) =>
           `<tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.product_name}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${escapeHtml(item.product_name)}</td>
             <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
             <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">${(item.price * item.quantity).toFixed(0)} kr</td>
           </tr>`
       )
       .join("");
 
-    const deliverySpeedText = order.deliverySpeed === "priority" ? "Prioriterad (10-20 min)" : "Standard (20-30 min)";
+    const deliverySpeedText = order.delivery_speed === "priority" ? "Prioriterad (10-20 min)" : "Standard (20-30 min)";
+    const deliveryAreaName = order.delivery_areas?.name || "Okänt";
 
     const customerEmailHtml = `
       <!DOCTYPE html>
@@ -74,14 +122,14 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           
           <div style="padding: 30px;">
-            <p style="font-size: 16px; color: #333;">Hej ${order.customerName}!</p>
+            <p style="font-size: 16px; color: #333;">Hej ${escapeHtml(order.customer_name)}!</p>
             <p style="font-size: 16px; color: #666;">Din beställning har mottagits och vi förbereder den nu. Du kommer att få dina snacks inom kort!</p>
             
             <div style="background: #f8f8f8; border-radius: 12px; padding: 20px; margin: 20px 0;">
               <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #333;">Orderdetaljer</h2>
-              <p style="margin: 5px 0; color: #666;"><strong>Ordernummer:</strong> ${order.orderNumber}</p>
+              <p style="margin: 5px 0; color: #666;"><strong>Ordernummer:</strong> ${escapeHtml(order.order_number)}</p>
               <p style="margin: 5px 0; color: #666;"><strong>Leveranstid:</strong> ${deliverySpeedText}</p>
-              <p style="margin: 5px 0; color: #666;"><strong>Adress:</strong> ${order.deliveryAddress}</p>
+              <p style="margin: 5px 0; color: #666;"><strong>Adress:</strong> ${escapeHtml(order.delivery_address)}</p>
             </div>
 
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -103,13 +151,13 @@ const handler = async (req: Request): Promise<Response> => {
                 <span>${order.subtotal.toFixed(0)} kr</span>
               </div>
               <div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #666;">
-                <span>Leveransavgift (${order.deliveryArea})</span>
-                <span>${order.deliveryFee} kr</span>
+                <span>Leveransavgift (${escapeHtml(deliveryAreaName)})</span>
+                <span>${order.delivery_fee} kr</span>
               </div>
-              ${order.priorityFee > 0 ? `
+              ${order.priority_fee > 0 ? `
               <div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #666;">
                 <span>Prioriterad leverans</span>
-                <span>${order.priorityFee} kr</span>
+                <span>${order.priority_fee} kr</span>
               </div>
               ` : ''}
               <div style="display: flex; justify-content: space-between; margin: 15px 0 0 0; font-size: 20px; font-weight: bold; color: #FF6B35;">
@@ -127,7 +175,7 @@ const handler = async (req: Request): Promise<Response> => {
             ${order.notes ? `
             <div style="background: #e8f4fd; border-radius: 8px; padding: 15px; margin-top: 15px;">
               <p style="margin: 0; font-size: 14px; color: #0c5460;">
-                📝 <strong>Ditt meddelande:</strong> ${order.notes}
+                📝 <strong>Ditt meddelande:</strong> ${escapeHtml(order.notes)}
               </p>
             </div>
             ` : ''}
@@ -152,14 +200,14 @@ const handler = async (req: Request): Promise<Response> => {
         
         <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin: 20px 0;">
           <h2 style="margin-top: 0;">Kunduppgifter</h2>
-          <p><strong>Ordernummer:</strong> ${order.orderNumber}</p>
-          <p><strong>Namn:</strong> ${order.customerName}</p>
-          <p><strong>Email:</strong> ${order.customerEmail}</p>
-          <p><strong>Telefon:</strong> ${order.customerPhone}</p>
-          <p><strong>Adress:</strong> ${order.deliveryAddress}</p>
-          <p><strong>Område:</strong> ${order.deliveryArea}</p>
+          <p><strong>Ordernummer:</strong> ${escapeHtml(order.order_number)}</p>
+          <p><strong>Namn:</strong> ${escapeHtml(order.customer_name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(order.customer_email)}</p>
+          <p><strong>Telefon:</strong> ${escapeHtml(order.customer_phone)}</p>
+          <p><strong>Adress:</strong> ${escapeHtml(order.delivery_address)}</p>
+          <p><strong>Område:</strong> ${escapeHtml(deliveryAreaName)}</p>
           <p><strong>Leveranstid:</strong> ${deliverySpeedText}</p>
-          ${order.notes ? `<p><strong>Meddelande:</strong> ${order.notes}</p>` : ''}
+          ${order.notes ? `<p><strong>Meddelande:</strong> ${escapeHtml(order.notes)}</p>` : ''}
         </div>
 
         <h2>Produkter</h2>
@@ -178,8 +226,8 @@ const handler = async (req: Request): Promise<Response> => {
 
         <div style="margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 8px;">
           <p style="margin: 5px 0;"><strong>Delsumma:</strong> ${order.subtotal.toFixed(0)} kr</p>
-          <p style="margin: 5px 0;"><strong>Leverans:</strong> ${order.deliveryFee} kr</p>
-          ${order.priorityFee > 0 ? `<p style="margin: 5px 0;"><strong>Prioritering:</strong> ${order.priorityFee} kr</p>` : ''}
+          <p style="margin: 5px 0;"><strong>Leverans:</strong> ${order.delivery_fee} kr</p>
+          ${order.priority_fee > 0 ? `<p style="margin: 5px 0;"><strong>Prioritering:</strong> ${order.priority_fee} kr</p>` : ''}
           <p style="margin: 10px 0 0 0; font-size: 20px;"><strong>TOTALT: ${order.total.toFixed(0)} kr</strong></p>
         </div>
       </body>
@@ -189,8 +237,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Send customer confirmation email
     const customerEmailResponse = await resend.emails.send({
       from: "Snaxo <order@snaxo.online>",
-      to: [order.customerEmail],
-      subject: `Orderbekräftelse - ${order.orderNumber}`,
+      to: [order.customer_email],
+      subject: `Orderbekräftelse - ${order.order_number}`,
       html: customerEmailHtml,
     });
 
@@ -200,7 +248,7 @@ const handler = async (req: Request): Promise<Response> => {
     const adminEmailResponse = await resend.emails.send({
       from: "Snaxo Orders <order@snaxo.online>",
       to: [ADMIN_EMAIL],
-      subject: `🚨 Ny beställning - ${order.orderNumber} - ${order.total.toFixed(0)} kr`,
+      subject: `🚨 Ny beställning - ${order.order_number} - ${order.total.toFixed(0)} kr`,
       html: adminEmailHtml,
     });
 
@@ -217,10 +265,11 @@ const handler = async (req: Request): Promise<Response> => {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       }
     );
-  } catch (error: any) {
-    console.error("Error in send-order-emails function:", error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error in send-order-emails function:", errorMessage);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -228,5 +277,16 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+// Helper function to escape HTML to prevent XSS
+function escapeHtml(text: string | null | undefined): string {
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 serve(handler);
