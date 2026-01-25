@@ -76,8 +76,23 @@ export default function Checkout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Client-side validation (additional server-side validation happens in RPC)
     if (!formData.name || !formData.email || !formData.phone || !formData.address) {
       toast.error('Fyll i alla obligatoriska fält');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Ogiltig e-postadress');
+      return;
+    }
+
+    // Validate phone format (at least 7 digits)
+    const phoneDigits = formData.phone.replace(/[^0-9]/g, '');
+    if (phoneDigits.length < 7 || formData.phone.length > 20) {
+      toast.error('Ogiltigt telefonnummer');
       return;
     }
 
@@ -89,66 +104,54 @@ export default function Checkout() {
     setIsSubmitting(true);
 
     try {
-      // Create order in database
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          customer_name: formData.name,
-          customer_email: formData.email,
-          customer_phone: formData.phone,
-          delivery_address: formData.address,
-          delivery_area_id: deliveryAreaId,
-          delivery_speed: deliverySpeed,
-          delivery_fee: deliveryFee,
-          priority_fee: priorityFee,
-          subtotal,
-          total,
-          notes: formData.notes || null,
-        })
-        .select()
-        .single();
+      // Use secure RPC function for order creation with server-side validation
+      const { data: orderResult, error: orderError } = await supabase.rpc('create_order_secure', {
+        p_customer_name: formData.name.trim(),
+        p_customer_email: formData.email.trim().toLowerCase(),
+        p_customer_phone: formData.phone.trim(),
+        p_delivery_address: formData.address.trim(),
+        p_delivery_area_id: deliveryAreaId,
+        p_delivery_speed: deliverySpeed,
+        p_notes: formData.notes?.trim() || null,
+        p_items: items.map(item => ({
+          product_id: item.product.id,
+          quantity: item.quantity
+        }))
+      });
 
-      if (orderError) throw orderError;
+      if (orderError) {
+        console.error('Order error:', orderError);
+        // Show user-friendly error messages
+        if (orderError.message.includes('Invalid customer name')) {
+          toast.error('Namn måste vara mellan 2 och 100 tecken');
+        } else if (orderError.message.includes('Invalid email')) {
+          toast.error('Ogiltig e-postadress');
+        } else if (orderError.message.includes('Invalid phone')) {
+          toast.error('Ogiltigt telefonnummer');
+        } else if (orderError.message.includes('Invalid delivery address')) {
+          toast.error('Leveransadressen måste vara minst 5 tecken');
+        } else if (orderError.message.includes('out of stock')) {
+          toast.error('En produkt är slut i lager. Uppdatera din varukorg.');
+        } else {
+          toast.error('Kunde inte skapa beställningen. Försök igen.');
+        }
+        return;
+      }
 
-      // Create order items
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.product.id,
-        product_name: item.product.name,
-        quantity: item.quantity,
-        price: item.product.price,
-      }));
+      const orderData = orderResult as {
+        id: string;
+        order_number: string;
+        total: number;
+        customer_email: string;
+      };
 
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
-
-      // Send order confirmation emails
+      // Send order confirmation emails (now with proper authorization)
       try {
-        const emailPayload = {
-          orderNumber: order.order_number,
-          customerName: formData.name,
-          customerEmail: formData.email,
-          customerPhone: formData.phone,
-          deliveryAddress: formData.address,
-          deliveryArea: deliveryAreaName,
-          deliverySpeed,
-          deliveryFee,
-          priorityFee,
-          subtotal,
-          total,
-          notes: formData.notes || null,
-          items: items.map((item) => ({
-            product_name: item.product.name,
-            quantity: item.quantity,
-            price: item.product.price,
-          })),
-        };
-
         const { error: emailError } = await supabase.functions.invoke('send-order-emails', {
-          body: emailPayload,
+          body: {
+            orderNumber: orderData.order_number,
+            customerEmail: orderData.customer_email,
+          },
         });
 
         if (emailError) {
@@ -162,7 +165,7 @@ export default function Checkout() {
 
       // Clear cart and redirect to confirmation
       clearCart();
-      navigate(`/order-bekraftelse?order=${order.id}`);
+      navigate(`/order-bekraftelse?order=${orderData.id}`);
       
     } catch (error) {
       console.error('Order error:', error);

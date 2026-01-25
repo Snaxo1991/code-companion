@@ -189,7 +189,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_order_secure: {
+        Args: {
+          p_customer_email: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_delivery_address: string
+          p_delivery_area_id: string
+          p_delivery_speed: Database["public"]["Enums"]["delivery_speed"]
+          p_items: Json
+          p_notes: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       delivery_speed: "standard" | "priority"
