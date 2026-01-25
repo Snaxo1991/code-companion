@@ -28,7 +28,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(CART_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // Filter out invalid items (items without proper product data)
+          return Array.isArray(parsed) 
+            ? parsed.filter((item: CartItem) => item?.product?.id && item?.product?.price != null)
+            : [];
+        } catch {
+          return [];
+        }
+      }
     }
     return [];
   });
