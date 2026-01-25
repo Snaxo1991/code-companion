@@ -12,7 +12,7 @@ const sizeClasses = {
   md: 'h-20',
   lg: 'h-28',
   xl: 'h-40',
-  hero: 'h-64 sm:h-80',
+  hero: 'h-72 sm:h-96 w-auto max-w-full',
 };
 
 export function Logo({ size = 'md', showTagline = false, className }: LogoProps) {
