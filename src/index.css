@@ -89,6 +89,14 @@
     @apply bg-gradient-to-r from-orange-600 via-red-500 to-orange-500 bg-clip-text text-transparent;
   }
 
+  .snaxo-gradient {
+    @apply bg-gradient-to-r from-orange-500 to-red-500;
+  }
+
+  .snaxo-gradient-text {
+    @apply bg-gradient-to-r from-orange-600 via-red-500 to-orange-500 bg-clip-text text-transparent;
+  }
+
   .glass-card {
     @apply bg-card/90 backdrop-blur-lg border border-border/50 shadow-sm;
   }
@@ -99,6 +107,49 @@
 
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 3s ease-in-out infinite;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

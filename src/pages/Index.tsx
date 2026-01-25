@@ -1,102 +1,82 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Truck, Clock, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/Logo';
-import { ProductCard } from '@/components/ProductCard';
-import { BottomNav } from '@/components/BottomNav';
-import { supabase } from '@/integrations/supabase/client';
-
-interface Product {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  original_price: number | null;
-  image_url: string | null;
-  is_popular: boolean | null;
-  in_stock: boolean | null;
-}
+import { Layout } from '@/components/Layout';
+import { ProductGrid } from '@/components/ProductGrid';
 
 export default function Index() {
-  const navigate = useNavigate();
-  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      const { data } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_popular', true)
-        .limit(4);
-
-      if (data) setPopularProducts(data);
-      setLoading(false);
-    }
-    fetchData();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-background to-background pb-20">
+    <Layout>
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-200/80 via-orange-100/50 to-background" />
-        <div className="relative px-6 pt-10 pb-10 flex flex-col items-center">
-          <Logo size="hero" showTagline className="mb-8" />
-          
-          <Button
-            size="lg"
-            className="w-full max-w-sm h-14 text-lg font-bold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
-            onClick={() => navigate('/menu')}
-          >
-            Beställ nu! 🛵
-            <ArrowRight className="h-5 w-5 ml-2" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Popular Products */}
-      <section className="px-6 py-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">🔥 Populärt just nu</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-primary"
-            onClick={() => navigate('/menu')}
-          >
-            Visa alla
-            <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-48 bg-muted animate-pulse rounded-xl" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4">
-            {popularProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={{
-                  ...product,
-                  description: product.description ?? undefined,
-                  original_price: product.original_price ?? undefined,
-                  image_url: product.image_url ?? undefined,
-                  is_popular: product.is_popular ?? false,
-                  in_stock: product.in_stock ?? true,
-                }}
+      <section className="relative overflow-hidden snaxo-gradient py-16 md:py-24">
+        <div className="container px-4">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-4">
+                TUGGA NU,<br />TÄNK SEN 🛵
+              </h1>
+              <p className="text-xl text-white/90 mb-8 max-w-lg">
+                Hemleverans av dina favoritsnacks, drickor och fryst mat – direkt till din dörr!
+              </p>
+              <Link to="/menu">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                  Se menyn <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+            <div className="flex-1 flex justify-center">
+              <img 
+                alt="SNAXO" 
+                className="w-64 md:w-80 animate-bounce-subtle" 
+                src="https://image2url.com/r2/default/images/1769085554564-fedc8c31-abac-4f1e-8375-6fa8c3969d5b.png" 
               />
-            ))}
+            </div>
           </div>
-        )}
+        </div>
       </section>
 
-      <BottomNav />
-    </div>
+      {/* Features */}
+      <section className="py-12 bg-accent/50">
+        <div className="container px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-card">
+              <div className="p-3 rounded-full bg-primary/10">
+                <Truck className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-display font-semibold">Snabb leverans</h3>
+                <p className="text-sm text-muted-foreground">Vid din dörr</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-card">
+              <div className="p-3 rounded-full bg-primary/10">
+                <Clock className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-display font-semibold">Enkelt & smidigt</h3>
+                <p className="text-sm text-muted-foreground">Beställ på några klick</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-card">
+              <div className="p-3 rounded-full bg-primary/10">
+                <MapPin className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-display font-semibold">Stort område</h3>
+                <p className="text-sm text-muted-foreground">Järfälla, Upplands Bro, Husby, Akalla & Kista</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Products */}
+      <section className="py-12 md:py-16">
+        <div className="container px-4">
+          <h2 className="font-display text-3xl font-bold text-center mb-8">Våra produkter</h2>
+          <ProductGrid />
+        </div>
+      </section>
+    </Layout>
   );
 }

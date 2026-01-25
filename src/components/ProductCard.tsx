@@ -1,114 +1,124 @@
-import { Plus, Check } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Product, CATEGORY_LABELS } from '@/types/database';
 import { useCart } from '@/hooks/useCart';
-import { cn } from '@/lib/utils';
-import { useState } from 'react';
-
-interface Product {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  original_price?: number;
-  image_url?: string;
-  is_popular?: boolean;
-  in_stock?: boolean;
-}
 
 interface ProductCardProps {
   product: Product;
-  compact?: boolean;
 }
 
-export function ProductCard({ product, compact = false }: ProductCardProps) {
-  const { addItem } = useCart();
-  const [justAdded, setJustAdded] = useState(false);
-  const hasDiscount = product.original_price && product.original_price > product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(((product.original_price! - product.price) / product.original_price!) * 100)
-    : 0;
+export function ProductCard({ product }: ProductCardProps) {
+  const { items, addItem, updateQuantity } = useCart();
+  const cartItem = items.find(item => item.product.id === product.id);
+  const quantity = cartItem?.quantity || 0;
 
-  const handleAdd = () => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image_url: product.image_url,
-    });
-    setJustAdded(true);
-    setTimeout(() => setJustAdded(false), 1500);
+  const getCategoryBadgeClass = (category: string) => {
+    switch (category) {
+      case 'drycker':
+        return 'bg-blue-100 text-blue-800';
+      case 'fryst':
+        return 'bg-cyan-100 text-cyan-800';
+      case 'snacks':
+        return 'bg-orange-100 text-orange-800';
+      case 'deals':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-muted text-muted-foreground';
+    }
+  };
+
+  const getCategoryEmoji = (category: string) => {
+    switch (category) {
+      case 'drycker':
+        return '🥤';
+      case 'fryst':
+        return '🧊';
+      case 'snacks':
+        return '🍿';
+      case 'deals':
+        return '🎉';
+      default:
+        return '📦';
+    }
   };
 
   return (
-    <Card
-      className={cn(
-        'overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card border-border/50 rounded-2xl',
-        !product.in_stock && 'opacity-60'
-      )}
-    >
-      <div className={cn('relative', compact ? 'h-24' : 'h-36')}>
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card border-border">
+      <div className="aspect-square relative overflow-hidden p-6 flex items-center justify-center bg-gradient-to-b from-amber-50 to-orange-50">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="max-w-[85%] max-h-[85%] object-contain transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
-            <span className="text-4xl">🍿</span>
+          <div className="w-full h-full flex items-center justify-center text-6xl">
+            {getCategoryEmoji(product.category)}
           </div>
         )}
+        <span className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeClass(product.category)}`}>
+          {CATEGORY_LABELS[product.category]}
+        </span>
         {product.is_popular && (
-          <Badge className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-md">
+          <span className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
             ⭐ Populär
-          </Badge>
-        )}
-        {hasDiscount && (
-          <Badge className="absolute top-2 right-2 bg-red-500 text-white border-0 shadow-md">
-            -{discountPercent}%
-          </Badge>
+          </span>
         )}
       </div>
-
-      <div className="p-4">
-        <h3 className="font-bold text-base line-clamp-2 leading-tight mb-1">{product.name}</h3>
-        {!compact && product.description && (
-          <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+      <CardContent className="p-4">
+        <h3 className="font-display font-semibold text-lg mb-1 line-clamp-1">
+          {product.name}
+        </h3>
+        {product.description && (
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
             {product.description}
           </p>
         )}
-
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex flex-col">
-            <span className="font-bold text-lg text-primary">{product.price} kr</span>
-            {hasDiscount && (
-              <span className="text-xs text-muted-foreground line-through">
-                {product.original_price} kr
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-bold text-lg text-primary">
+              {Math.round(product.price)} kr
+            </span>
+            {product.original_price != null && product.original_price > product.price && (
+              <span className="text-sm text-muted-foreground line-through">
+                {Math.round(product.original_price)} kr
               </span>
             )}
           </div>
-
-          <Button
-            size="icon"
-            className={cn(
-              'h-10 w-10 rounded-full shadow-md transition-all duration-300',
-              justAdded 
-                ? 'bg-green-500 hover:bg-green-500' 
-                : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
-            )}
-            onClick={handleAdd}
-            disabled={!product.in_stock}
-          >
-            {justAdded ? (
-              <Check className="h-5 w-5 text-white" />
-            ) : (
-              <Plus className="h-5 w-5 text-white" />
-            )}
-          </Button>
+          
+          {quantity === 0 ? (
+            <Button 
+              onClick={() => addItem(product)}
+              size="sm"
+              className="snaxo-gradient text-white"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Lägg till
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => updateQuantity(product.id, quantity - 1)}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="w-6 text-center font-semibold">{quantity}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => addItem(product)}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 }
