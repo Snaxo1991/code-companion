@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Check, Loader2, CreditCard, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,13 +9,22 @@ import { Layout } from '@/components/Layout';
 import { useCart } from '@/hooks/useCart';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { DELIVERY_AREA_LABELS, DELIVERY_SPEED_TIMES } from '@/types/database';
+import { DELIVERY_SPEED_TIMES, DeliveryArea } from '@/types/database';
+
+// Map frontend delivery area keys to database names
+const AREA_NAME_MAP: Record<DeliveryArea, string> = {
+  jarfalla: 'Järfälla',
+  upplands_bro: 'Upplands Bro',
+  stockholm: 'Husby/Akalla/Kista',
+};
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { items, subtotal, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart } = useCart();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deliveryAreaId, setDeliveryAreaId] = useState<string | null>(null);
+  const [deliveryAreaName, setDeliveryAreaName] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,6 +32,27 @@ export default function Checkout() {
     address: '',
     notes: '',
   });
+
+  // Fetch the delivery area ID from database
+  useEffect(() => {
+    async function fetchDeliveryAreaId() {
+      if (!deliveryArea) return;
+      
+      const areaName = AREA_NAME_MAP[deliveryArea];
+      const { data, error } = await supabase
+        .from('delivery_areas')
+        .select('id, name')
+        .eq('name', areaName)
+        .maybeSingle();
+      
+      if (data && !error) {
+        setDeliveryAreaId(data.id);
+        setDeliveryAreaName(data.name);
+      }
+    }
+    
+    fetchDeliveryAreaId();
+  }, [deliveryArea]);
 
   if (items.length === 0 || !deliveryArea) {
     return (
@@ -51,6 +81,11 @@ export default function Checkout() {
       return;
     }
 
+    if (!deliveryAreaId) {
+      toast.error('Kunde inte hitta leveransområde. Försök igen.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -62,7 +97,7 @@ export default function Checkout() {
           customer_email: formData.email,
           customer_phone: formData.phone,
           delivery_address: formData.address,
-          delivery_area_id: deliveryArea, // We'll need to map this
+          delivery_area_id: deliveryAreaId,
           delivery_speed: deliverySpeed,
           delivery_fee: deliveryFee,
           priority_fee: priorityFee,
@@ -219,7 +254,7 @@ export default function Checkout() {
                     <span>{subtotal.toFixed(0)} kr</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Leverans ({DELIVERY_AREA_LABELS[deliveryArea]})</span>
+                    <span>Leverans ({deliveryAreaName || '...'})</span>
                     <span>{deliveryFee} kr</span>
                   </div>
                   {priorityFee > 0 && (
