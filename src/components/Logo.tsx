@@ -24,7 +24,7 @@ export function Logo({ size = 'md', showTagline = false, className }: LogoProps)
         className={cn('object-contain drop-shadow-xl', sizeClasses[size])}
       />
       {showTagline && (
-        <p className="text-foreground/70 text-base mt-3 tracking-widest uppercase font-semibold">
+        <p className="text-foreground/80 text-xl sm:text-2xl mt-4 tracking-widest uppercase font-bold">
           Tugga nu, tänk sen
         </p>
       )}
