@@ -181,6 +181,12 @@ const handler = async (req: Request): Promise<Response> => {
               </p>
             </div>
             ` : ''}
+
+            <div style="background: #FF6B35; border-radius: 8px; padding: 18px; margin-top: 20px; text-align: center;">
+              <p style="margin: 0; font-size: 16px; color: white; font-weight: 600;">
+                📱 Vänligen ha telefonen tillgänglig, då vi kontaktar dig när vi är utanför.
+              </p>
+            </div>
           </div>
 
           <div style="background: #333; padding: 20px; text-align: center;">
