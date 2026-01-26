@@ -182,10 +182,13 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             ` : ''}
 
-            <div style="background: linear-gradient(135deg, #1a1a1a, #2d2d2d); border-radius: 12px; padding: 24px; margin-top: 25px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-              <p style="margin: 0; font-size: 15px; color: #ffffff; font-weight: 400; letter-spacing: 0.3px; line-height: 1.6;">
-                📱 <span style="font-weight: 500;">Vänligen ha telefonen tillgänglig</span><br>
-                <span style="color: #cccccc; font-size: 14px;">Vi kontaktar dig när vi är utanför din adress.</span>
+            <div style="background: linear-gradient(135deg, #1a1a1a, #2d2d2d); border-radius: 12px; padding: 28px; margin-top: 25px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+              <div style="font-size: 32px; margin-bottom: 12px;">📱</div>
+              <p style="margin: 0 0 6px 0; font-size: 17px; color: #ffffff; font-weight: 600; letter-spacing: 0.3px;">
+                Vänligen ha telefonen tillgänglig
+              </p>
+              <p style="margin: 0; font-size: 15px; color: #e0e0e0; font-weight: 400;">
+                Vi kontaktar dig när vi är utanför din adress.
               </p>
             </div>
           </div>
