@@ -187,7 +187,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p style="margin: 0 0 6px 0; font-size: 17px; color: #ffffff; font-weight: 600; letter-spacing: 0.3px;">
                 Vänligen ha telefonen tillgänglig
               </p>
-              <p style="margin: 0; font-size: 15px; color: #e0e0e0; font-weight: 400;">
+              <p style="margin: 0; font-size: 15px; color: #ffffff; font-weight: 400;">
                 Vi kontaktar dig när vi är utanför din adress.
               </p>
             </div>
