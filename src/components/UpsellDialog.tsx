@@ -31,12 +31,19 @@ export function UpsellDialog({ open, onOpenChange, onContinue }: UpsellDialogPro
   }, [open]);
 
   const fetchUpsellProducts = async () => {
+    // Specific upsell product IDs
+    const upsellProductIds = [
+      '9b588009-d610-44cc-97ed-909c0a12c7ff', // Bounty (Kokos Chokladbar)
+      '794908af-d262-4b07-a94d-ae4f99ed528b', // Delicato (Brownie Singelpack)
+      'bdc6e318-bfe4-4e5e-b59b-b94c87565484', // Cloetta (Sportlunch Dubbel)
+      '29a0848a-a86c-4077-bf50-a3dc5eafcdb8', // Delicato (Delicatoboll Singelpack)
+    ];
+
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('category', 'snacks')
-      .eq('in_stock', true)
-      .limit(4);
+      .in('id', upsellProductIds)
+      .eq('in_stock', true);
 
     if (!error && data) {
       setUpsellProducts(data as Product[]);
