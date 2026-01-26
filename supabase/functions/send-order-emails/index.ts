@@ -145,25 +145,27 @@ const handler = async (req: Request): Promise<Response> => {
               </tbody>
             </table>
 
-            <div style="border-top: 2px solid #eee; padding-top: 15px; margin-top: 10px;">
-              <div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #666;">
-                <span>Delsumma</span>
-                <span>${order.subtotal.toFixed(0)} kr</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #666;">
-                <span>Leveransavgift (${escapeHtml(deliveryAreaName)})</span>
-                <span>${order.delivery_fee} kr</span>
-              </div>
-              ${order.priority_fee > 0 ? `
-              <div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #666;">
-                <span>Prioriterad leverans</span>
-                <span>${order.priority_fee} kr</span>
-              </div>
-              ` : ''}
-              <div style="display: flex; justify-content: space-between; margin: 15px 0 0 0; font-size: 20px; font-weight: bold; color: #FF6B35;">
-                <span>Totalt</span>
-                <span>${order.total.toFixed(0)} kr</span>
-              </div>
+            <div style="border-top: 2px solid #eee; padding-top: 20px; margin-top: 15px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px 0; font-size: 15px; color: #333; font-weight: 500;">Delsumma:</td>
+                  <td style="padding: 10px 0; font-size: 15px; color: #333; text-align: right; font-weight: 500;">${order.subtotal.toFixed(0)} kr</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; font-size: 15px; color: #333; font-weight: 500;">Leveransavgift (${escapeHtml(deliveryAreaName)}):</td>
+                  <td style="padding: 10px 0; font-size: 15px; color: #333; text-align: right; font-weight: 500;">${order.delivery_fee} kr</td>
+                </tr>
+                ${order.priority_fee > 0 ? `
+                <tr>
+                  <td style="padding: 10px 0; font-size: 15px; color: #333; font-weight: 500;">Prioriterad leverans:</td>
+                  <td style="padding: 10px 0; font-size: 15px; color: #333; text-align: right; font-weight: 500;">${order.priority_fee} kr</td>
+                </tr>
+                ` : ''}
+                <tr style="border-top: 2px solid #FF6B35;">
+                  <td style="padding: 15px 0 5px 0; font-size: 20px; color: #FF6B35; font-weight: bold;">Totalt:</td>
+                  <td style="padding: 15px 0 5px 0; font-size: 20px; color: #FF6B35; text-align: right; font-weight: bold;">${order.total.toFixed(0)} kr</td>
+                </tr>
+              </table>
             </div>
 
             <div style="background: #fff3cd; border-radius: 8px; padding: 15px; margin-top: 20px;">
