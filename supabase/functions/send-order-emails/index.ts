@@ -74,7 +74,6 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Create Supabase client with service role to verify order exists
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
