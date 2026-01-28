@@ -24,11 +24,30 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Verify authorization header exists
+    // Verify authorization header exists and validate JWT
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
         JSON.stringify({ error: "Unauthorized: Missing or invalid authorization header" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate JWT token using Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claims, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    
+    if (claimsError || !claims?.claims) {
+      console.error("JWT validation failed:", claimsError);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: Invalid JWT token" }),
         { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
