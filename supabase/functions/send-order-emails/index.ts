@@ -7,7 +7,7 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface SendEmailRequest {
@@ -17,6 +17,13 @@ interface SendEmailRequest {
 
 const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") || "divansabir06@gmail.com";
 
+// Server-side client (service role) used to verify the order exists before sending any email.
+// NOTE: Checkout is public (no user session), so we must not require a user JWT here.
+// Security is enforced by verifying order_number + customer_email match in the database.
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -24,34 +31,6 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Verify authorization header exists and validate JWT
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized: Missing or invalid authorization header" }),
-        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    // Validate JWT token using Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    
-    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claims, error: claimsError } = await supabaseAuth.auth.getClaims(token);
-    
-    if (claimsError || !claims?.claims) {
-      console.error("JWT validation failed:", claimsError);
-      return new Response(
-        JSON.stringify({ error: "Unauthorized: Invalid JWT token" }),
-        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
     // Parse request body
     const body: SendEmailRequest = await req.json();
     const { orderNumber, customerEmail } = body;
@@ -72,11 +51,6 @@ const handler = async (req: Request): Promise<Response> => {
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
-
-    // Create Supabase client with service role to verify order exists
-    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
     // Verify order exists and email matches (prevents sending to arbitrary emails)
     const { data: order, error: orderError } = await supabase
