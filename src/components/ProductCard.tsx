@@ -67,11 +67,11 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
       <CardContent className="p-4">
-        <h3 className="font-display font-semibold text-lg mb-1 line-clamp-1">
+        <h3 className="font-display font-semibold text-sm sm:text-lg mb-1">
           {product.name}
         </h3>
         {product.description && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3">
             {product.description}
           </p>
         )}
