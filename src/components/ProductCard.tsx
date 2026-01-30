@@ -76,7 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
         )}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex flex-col shrink-0">
             <span className="font-display font-bold text-lg text-primary whitespace-nowrap">
               {Math.round(product.price)} kr
             </span>
