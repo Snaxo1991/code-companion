@@ -75,13 +75,13 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.description}
           </p>
         )}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-display font-bold text-lg text-primary">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 shrink-0">
+            <span className="font-display font-bold text-lg text-primary whitespace-nowrap">
               {Math.round(product.price)} kr
             </span>
             {product.original_price != null && product.original_price > product.price && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
                 {Math.round(product.original_price)} kr
               </span>
             )}
