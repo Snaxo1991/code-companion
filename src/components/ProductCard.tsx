@@ -62,7 +62,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </span>
         {product.is_popular && (
           <span className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
-            ⭐ Populär
+            ✨ Nyhet
           </span>
         )}
       </div>
