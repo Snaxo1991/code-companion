@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Check, Loader2, CreditCard, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { useCart } from '@/hooks/useCart';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { DELIVERY_SPEED_TIMES, DeliveryArea } from '@/types/database';
+import { FreeItemDialog } from '@/components/FreeItemDialog';
 
 // Map frontend delivery area keys to database names
 const AREA_NAME_MAP: Record<DeliveryArea, string> = {
@@ -20,8 +21,12 @@ const AREA_NAME_MAP: Record<DeliveryArea, string> = {
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { items, subtotal, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart } = useCart();
+  const { items, subtotal, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart, addItem } = useCart();
   
+  const [showFreeItemDialog, setShowFreeItemDialog] = useState(false);
+  const freeItemOffered = useRef(false);
+  const pendingSubmitEvent = useRef<React.FormEvent | null>(null);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryAreaId, setDeliveryAreaId] = useState<string | null>(null);
   const [deliveryAreaName, setDeliveryAreaName] = useState<string>('');
@@ -75,12 +80,25 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Client-side validation (additional server-side validation happens in RPC)
-    if (!formData.name || !formData.email || !formData.phone || !formData.address) {
-      toast.error('Fyll i alla obligatoriska fält');
+
+    // Show free item offer once before submitting
+    if (!freeItemOffered.current) {
+      // Basic validation before showing dialog
+      if (!formData.name || !formData.email || !formData.phone || !formData.address) {
+        toast.error('Fyll i alla obligatoriska fält');
+        return;
+      }
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      if (!emailRegex.test(formData.email)) {
+        toast.error('Ogiltig e-postadress');
+        return;
+      }
+      freeItemOffered.current = true;
+      pendingSubmitEvent.current = e;
+      setShowFreeItemDialog(true);
       return;
     }
+    
 
     // Validate email format
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -175,7 +193,41 @@ export default function Checkout() {
     }
   };
 
+  const handleFreeItemAccept = async () => {
+    setShowFreeItemDialog(false);
+    // Fetch the Delicatoboll product and add it for free (price = 0)
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', '29a0848a-a86c-4077-bf50-a3dc5eafcdb8')
+      .maybeSingle();
+    if (data) {
+      addItem({ ...data, price: 0 } as any);
+    }
+    // Continue with order submission
+    submitOrder();
+  };
+
+  const handleFreeItemDecline = () => {
+    setShowFreeItemDialog(false);
+    submitOrder();
+  };
+
+  const submitOrder = () => {
+    // Trigger form submit programmatically
+    const form = document.querySelector('form');
+    if (form) {
+      form.requestSubmit();
+    }
+  };
+
   return (
+    <>
+    <FreeItemDialog
+      open={showFreeItemDialog}
+      onAccept={handleFreeItemAccept}
+      onDecline={handleFreeItemDecline}
+    />
     <Layout>
       <div className="container px-4 py-8 md:py-12">
         <Link to="/varukorg" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6">
@@ -341,5 +393,6 @@ export default function Checkout() {
         </form>
       </div>
     </Layout>
+    </>
   );
 }
