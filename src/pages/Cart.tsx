@@ -22,7 +22,7 @@ import {
 export default function Cart() {
   const navigate = useNavigate();
   const [showUpsell, setShowUpsell] = useState(false);
-  const { items, subtotal, deliveryArea, setDeliveryArea, deliverySpeed, setDeliverySpeed, deliveryFee, priorityFee, total } = useCart();
+  const { items, subtotal, billysDiscount, deliveryArea, setDeliveryArea, deliverySpeed, setDeliverySpeed, deliveryFee, priorityFee, total } = useCart();
 
   if (items.length === 0) {
     return (
@@ -122,6 +122,12 @@ export default function Cart() {
                   <span>Leveransavgift</span>
                   <span>{deliveryArea ? `${deliveryFee} kr` : '–'}</span>
                 </div>
+                {billysDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Billy's 3 för 2</span>
+                    <span>-{billysDiscount} kr</span>
+                  </div>
+                )}
                 {priorityFee > 0 && (
                   <div className="flex justify-between text-sm">
                     <span>Prioriteringsavgift</span>
