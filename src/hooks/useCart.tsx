@@ -115,8 +115,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  // Billy's 3 för 2 discount: for every 3 Billy's deal pizzas, one is free
-  const billysItems = items.filter(item => item.product.name.toLowerCase().includes("billy's") && item.product.category === 'deals');
+  // Billy's 3 för 2 discount: for every 3 Billy's pizzas (any category), one is free
+  const billysItems = items.filter(item => item.product.name.toLowerCase().includes("billy's"));
   const totalBillys = billysItems.reduce((sum, item) => sum + item.quantity, 0);
   const freeCount = Math.floor(totalBillys / 3);
   const cheapestBillysPrice = billysItems.length > 0 ? Math.min(...billysItems.map(i => i.product.price)) : 0;
