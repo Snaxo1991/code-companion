@@ -9,6 +9,7 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
+  billysDiscount: number;
   deliveryArea: DeliveryArea | null;
   setDeliveryArea: (area: DeliveryArea | null) => void;
   deliverySpeed: DeliverySpeed;
@@ -113,9 +114,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  // Billy's 3 för 2 discount: for every 3 Billy's deal pizzas, one is free
+  const billysItems = items.filter(item => item.product.name.toLowerCase().includes("billy's") && item.product.category === 'deals');
+  const totalBillys = billysItems.reduce((sum, item) => sum + item.quantity, 0);
+  const freeCount = Math.floor(totalBillys / 3);
+  const cheapestBillysPrice = billysItems.length > 0 ? Math.min(...billysItems.map(i => i.product.price)) : 0;
+  const billysDiscount = freeCount * cheapestBillysPrice;
+
   const deliveryFee = deliveryArea && DELIVERY_FEES[deliveryArea] ? DELIVERY_FEES[deliveryArea] : 0;
   const priorityFee = deliverySpeed === 'priority' ? PRIORITY_FEE : 0;
-  const total = subtotal + deliveryFee + priorityFee;
+  const total = subtotal - billysDiscount + deliveryFee + priorityFee;
 
   return (
     <CartContext.Provider
@@ -127,6 +136,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalItems,
         subtotal,
+        billysDiscount,
         deliveryArea,
         setDeliveryArea,
         deliverySpeed,

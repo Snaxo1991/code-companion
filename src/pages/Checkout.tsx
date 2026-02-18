@@ -20,7 +20,7 @@ const AREA_NAME_MAP: Record<DeliveryArea, string> = {
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { items, subtotal, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart } = useCart();
+  const { items, subtotal, billysDiscount, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart } = useCart();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryAreaId, setDeliveryAreaId] = useState<string | null>(null);
@@ -295,6 +295,12 @@ export default function Checkout() {
                     <span>Leverans ({deliveryAreaName || '...'})</span>
                     <span>{deliveryFee} kr</span>
                   </div>
+                  {billysDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Billy's 3 för 2</span>
+                      <span>-{billysDiscount} kr</span>
+                    </div>
+                  )}
                   {priorityFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span>Prioritering ({DELIVERY_SPEED_TIMES.priority})</span>
