@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { BillysVariantDialog } from '@/components/BillysVariantDialog';
 
 const BILLYS_COMBINED_DEAL_ID = '6a259973-3164-4d16-81c7-d0d950103e61';
+const BILLYS_PEPPERONI_IMG = 'https://image2url.com/r2/default/images/1769453014991-4bcdc1d9-3d23-4fbb-907a-c11130f88b4d.png';
+const BILLYS_CHILI_CHEESE_IMG = 'https://image2url.com/r2/default/images/1769454998841-c61b827f-531c-46e5-be95-cd5eb74c7895.png';
 
 interface ProductCardProps {
   product: Product;
@@ -60,7 +62,22 @@ export function ProductCard({ product }: ProductCardProps) {
     <>
       <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card border-border">
         <div className="aspect-square relative overflow-hidden p-6 flex items-center justify-center bg-gradient-to-b from-amber-50 to-orange-50">
-          {product.image_url ? (
+          {isBillysDeal ? (
+            <div className="relative w-full h-full flex items-center justify-center">
+              {/* Back pizza – slightly left and rotated */}
+              <img
+                src={BILLYS_CHILI_CHEESE_IMG}
+                alt="Billy's Chili Cheese"
+                className="absolute w-[70%] object-contain -translate-x-4 translate-y-2 rotate-[-8deg] transition-transform duration-300 group-hover:-translate-x-6"
+              />
+              {/* Front pizza – slightly right and rotated */}
+              <img
+                src={BILLYS_PEPPERONI_IMG}
+                alt="Billy's Pepperoni"
+                className="absolute w-[70%] object-contain translate-x-4 -translate-y-2 rotate-[8deg] transition-transform duration-300 group-hover:translate-x-6"
+              />
+            </div>
+          ) : product.image_url ? (
             <img
               src={product.image_url}
               alt={product.name}
