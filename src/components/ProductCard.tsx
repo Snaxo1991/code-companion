@@ -68,7 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <img
                 src={BILLYS_CHILI_CHEESE_IMG}
                 alt="Billy's Chili Cheese"
-                className="absolute w-[70%] object-contain -translate-x-4 translate-y-2 rotate-[-8deg] transition-transform duration-300 group-hover:-translate-x-6"
+                className="absolute w-[70%] object-contain -translate-x-4 translate-y-8 rotate-[-8deg] transition-transform duration-300 group-hover:-translate-x-6"
               />
               {/* Front pizza – slightly right and rotated */}
               <img
