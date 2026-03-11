@@ -66,7 +66,7 @@ export default function Cart() {
                   <SelectContent className="bg-popover">
                     {(Object.keys(DELIVERY_AREA_LABELS) as DeliveryArea[]).map(area => (
                       <SelectItem key={area} value={area}>
-                        {DELIVERY_AREA_LABELS[area]} - {DELIVERY_FEES[area]} kr
+                        {DELIVERY_AREA_LABELS[area]} – {DELIVERY_FEES[area] === 0 ? 'Gratis leverans' : `${DELIVERY_FEES[area]} kr`}
                       </SelectItem>
                     ))}
                   </SelectContent>
