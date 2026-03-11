@@ -120,7 +120,7 @@ export default function Cart() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Leveransavgift</span>
-                  <span>{deliveryArea ? `${deliveryFee} kr` : '–'}</span>
+                  <span>{!deliveryArea ? '–' : deliveryFee === 0 ? <span className="text-green-600 font-medium">Gratis</span> : `${deliveryFee} kr`}</span>
                 </div>
                 {billysDiscount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
