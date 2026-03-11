@@ -66,7 +66,7 @@ export default function Cart() {
                   <SelectContent className="bg-popover">
                     {(Object.keys(DELIVERY_AREA_LABELS) as DeliveryArea[]).map(area => (
                       <SelectItem key={area} value={area}>
-                        {DELIVERY_AREA_LABELS[area]} - {DELIVERY_FEES[area]} kr
+                        {DELIVERY_AREA_LABELS[area]} – {DELIVERY_FEES[area] === 0 ? 'Gratis leverans' : `${DELIVERY_FEES[area]} kr`}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -120,7 +120,7 @@ export default function Cart() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Leveransavgift</span>
-                  <span>{deliveryArea ? `${deliveryFee} kr` : '–'}</span>
+                  <span>{!deliveryArea ? '–' : deliveryFee === 0 ? <span className="text-green-600 font-medium">Gratis</span> : `${deliveryFee} kr`}</span>
                 </div>
                 {billysDiscount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">

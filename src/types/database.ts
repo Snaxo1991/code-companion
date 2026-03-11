@@ -67,15 +67,15 @@ export interface OrderItem {
 
 // Delivery fee configuration
 export const DELIVERY_FEES: Record<DeliveryArea, number> = {
-  jarfalla: 29,
-  upplands_bro: 49,
-  stockholm: 52,
+  jarfalla: 0,
+  upplands_bro: 25,
+  stockholm: 29,
 };
 
 export const DELIVERY_AREA_LABELS: Record<DeliveryArea, string> = {
   jarfalla: 'Järfälla',
-  upplands_bro: 'Upplands Bro',
-  stockholm: 'Husby, Akalla & Kista',
+  upplands_bro: 'Upplands-Bro',
+  stockholm: 'Kista, Akalla & Husby',
 };
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
