@@ -61,10 +61,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const getStockLabel = () => {
     if (!product.in_stock) return { text: 'Slut i lager', className: 'bg-red-100 text-red-700' };
     if (product.stock_quantity === null) return null;
-    if (product.stock_quantity >= 99) return { text: 'I lager', className: 'bg-green-100 text-green-700' };
-    if (product.stock_quantity <= 3) return { text: `Få kvar (${product.stock_quantity} st)`, className: 'bg-red-100 text-red-700' };
-    if (product.stock_quantity <= 10) return { text: `${product.stock_quantity} i lager`, className: 'bg-amber-100 text-amber-700' };
-    return { text: 'I lager', className: 'bg-green-100 text-green-700' };
+    if (product.stock_quantity >= 99) return { text: 'Mycket i lager', className: 'bg-green-100 text-green-700' };
+    if (product.stock_quantity <= 3) return { text: `${product.stock_quantity} st kvar`, className: 'bg-red-100 text-red-700' };
+    return { text: `${product.stock_quantity} st i lager`, className: 'bg-amber-100 text-amber-700' };
   };
 
   const stockLabel = getStockLabel();
