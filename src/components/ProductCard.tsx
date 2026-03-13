@@ -59,6 +59,16 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const getStockLabel = (qty: number | null) => {
+    if (qty === null) return { text: 'I lager', className: 'bg-emerald-100 text-emerald-700' };
+    if (qty === 0) return { text: 'Slutsåld', className: 'bg-red-100 text-red-700' };
+    if (qty <= 3) return { text: `${qty} kvar`, className: 'bg-red-100 text-red-700' };
+    if (qty <= 10) return { text: `${qty} kvar`, className: 'bg-amber-100 text-amber-700' };
+    return { text: `${qty} i lager`, className: 'bg-emerald-100 text-emerald-700' };
+  };
+
+  const stockInfo = getStockLabel(product.stock_quantity);
+
   return (
     <>
       <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card border-border">
