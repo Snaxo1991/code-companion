@@ -58,9 +58,20 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const getStockLabel = () => {
+    if (!product.in_stock) return { text: 'Slut i lager', className: 'bg-red-100 text-red-700' };
+    if (product.stock_quantity === null) return null;
+    if (product.stock_quantity >= 99) return { text: 'I lager', className: 'bg-green-100 text-green-700' };
+    if (product.stock_quantity <= 3) return { text: `Få kvar (${product.stock_quantity} st)`, className: 'bg-red-100 text-red-700' };
+    if (product.stock_quantity <= 10) return { text: `${product.stock_quantity} i lager`, className: 'bg-amber-100 text-amber-700' };
+    return { text: 'I lager', className: 'bg-green-100 text-green-700' };
+  };
+
+  const stockLabel = getStockLabel();
+
   return (
     <>
-      <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card border-border">
+      <Card className={`group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card border-border ${!product.in_stock ? 'opacity-60' : ''}`}>
         <div className="aspect-square relative overflow-hidden p-6 flex items-center justify-center bg-gradient-to-b from-amber-50 to-orange-50">
           {isBillysDeal ? (
             <div className="relative w-full h-full flex items-center justify-center">
