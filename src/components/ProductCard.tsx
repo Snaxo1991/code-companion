@@ -1,7 +1,6 @@
 import { Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Product, CATEGORY_LABELS } from '@/types/database';
 import { useCart } from '@/hooks/useCart';
 import { useState } from 'react';
@@ -59,16 +58,6 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  const getStockLabel = (qty: number | null) => {
-    if (qty === null) return { text: 'I lager', className: 'bg-emerald-100 text-emerald-700' };
-    if (qty === 0) return { text: 'Slutsåld', className: 'bg-red-100 text-red-700' };
-    if (qty <= 3) return { text: `${qty} kvar`, className: 'bg-red-100 text-red-700' };
-    if (qty <= 10) return { text: `${qty} kvar`, className: 'bg-amber-100 text-amber-700' };
-    return { text: `${qty} i lager`, className: 'bg-emerald-100 text-emerald-700' };
-  };
-
-  const stockInfo = getStockLabel(product.stock_quantity);
-
   return (
     <>
       <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card border-border">
@@ -101,9 +90,6 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
           <span className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeClass(product.category)}`}>
             {CATEGORY_LABELS[product.category]}
-          </span>
-          <span className={`absolute bottom-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${stockInfo.className}`}>
-            {stockInfo.text}
           </span>
           {product.is_popular && (
             <span className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">

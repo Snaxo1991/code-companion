@@ -27,7 +27,6 @@ export interface Product {
   image_url: string | null;
   in_stock: boolean;
   is_popular: boolean;
-  stock_quantity: number | null;
   created_at: string;
 }
 

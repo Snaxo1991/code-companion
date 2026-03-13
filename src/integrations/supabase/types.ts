@@ -157,7 +157,6 @@ export type Database = {
           name: string
           original_price: number | null
           price: number
-          stock_quantity: number | null
         }
         Insert: {
           category?: Database["public"]["Enums"]["product_category"]
@@ -170,7 +169,6 @@ export type Database = {
           name: string
           original_price?: number | null
           price: number
-          stock_quantity?: number | null
         }
         Update: {
           category?: Database["public"]["Enums"]["product_category"]
@@ -183,7 +181,6 @@ export type Database = {
           name?: string
           original_price?: number | null
           price?: number
-          stock_quantity?: number | null
         }
         Relationships: []
       }
