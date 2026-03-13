@@ -106,6 +106,11 @@ export function ProductCard({ product }: ProductCardProps) {
               ✨ Nyhet
             </span>
           )}
+          {stockLabel && (
+            <span className={`absolute bottom-2 left-2 px-2 py-0.5 rounded-full text-xs font-medium ${stockLabel.className}`}>
+              {stockLabel.text}
+            </span>
+          )}
         </div>
         <CardContent className="p-4">
           <h3 className="font-display font-semibold text-sm sm:text-lg mb-1">
@@ -115,11 +120,6 @@ export function ProductCard({ product }: ProductCardProps) {
             <p className="text-xs sm:text-sm text-muted-foreground mb-2">
               {product.description}
             </p>
-          )}
-          {stockLabel && (
-            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${stockLabel.className}`}>
-              {stockLabel.text}
-            </span>
           )}
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col shrink-0">
