@@ -7,6 +7,44 @@ import { ProductGrid } from '@/components/ProductGrid';
 export default function Index() {
   return (
     <Layout>
+      {/* Sale Banner + Delivery Fees */}
+      <section className="py-10 md:py-14 bg-accent/30">
+        <div className="container px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Sale Banner */}
+            <div className="rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 p-8 text-white flex flex-col justify-center">
+              <span className="text-sm font-semibold uppercase tracking-widest mb-2 opacity-80">🔥 Erbjudande</span>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">RENSNING I LAGRET JUST NU</h2>
+              <p className="text-white/90">Passa på – utvalda produkter till rabatterade priser så länge lagret räcker!</p>
+            </div>
+
+            {/* Delivery Fees */}
+            <div className="rounded-2xl border border-border bg-card p-8">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2.5 rounded-full bg-primary/10">
+                  <Truck className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-bold">Leveransavgifter</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <span className="font-medium">Järfälla</span>
+                  <span className="font-bold text-green-600">Gratis</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <span className="font-medium">Upplands-Bro</span>
+                  <span className="font-bold">25 kr</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="font-medium">Kista / Akalla / Husby</span>
+                  <span className="font-bold">29 kr</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden snaxo-gradient py-16 md:py-24">
         <div className="container px-4">
@@ -70,43 +108,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Sale Banner + Delivery Fees */}
-      <section className="py-10 md:py-14">
-        <div className="container px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Sale Banner */}
-            <div className="rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 p-8 text-white flex flex-col justify-center">
-              <span className="text-sm font-semibold uppercase tracking-widest mb-2 opacity-80">🔥 Erbjudande</span>
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">RENSNING I LAGRET JUST NU</h2>
-              <p className="text-white/90">Passa på – utvalda produkter till rabatterade priser så länge lagret räcker!</p>
-            </div>
-
-            {/* Delivery Fees */}
-            <div className="rounded-2xl border border-border bg-card p-8">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="p-2.5 rounded-full bg-primary/10">
-                  <Truck className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-display text-xl font-bold">Leveransavgifter</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-border">
-                  <span className="font-medium">Järfälla</span>
-                  <span className="font-bold text-green-600">Gratis</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-border">
-                  <span className="font-medium">Upplands-Bro</span>
-                  <span className="font-bold">25 kr</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="font-medium">Kista / Akalla / Husby</span>
-                  <span className="font-bold">29 kr</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Products */}
       <section className="py-12 md:py-16">
