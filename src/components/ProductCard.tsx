@@ -1,6 +1,7 @@
 import { Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Product, CATEGORY_LABELS } from '@/types/database';
 import { useCart } from '@/hooks/useCart';
 import { useState } from 'react';
