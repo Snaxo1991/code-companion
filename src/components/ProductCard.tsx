@@ -61,10 +61,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const getStockLabel = () => {
     if (!product.in_stock) return { text: 'Slut i lager', className: 'bg-red-100 text-red-700' };
     if (product.stock_quantity === null) return null;
-    if (product.stock_quantity >= 99) return { text: 'I lager', className: 'bg-green-100 text-green-700' };
-    if (product.stock_quantity <= 3) return { text: `Få kvar (${product.stock_quantity} st)`, className: 'bg-red-100 text-red-700' };
-    if (product.stock_quantity <= 10) return { text: `${product.stock_quantity} i lager`, className: 'bg-amber-100 text-amber-700' };
-    return { text: 'I lager', className: 'bg-green-100 text-green-700' };
+    if (product.stock_quantity >= 99) return { text: 'Mycket i lager', className: 'bg-green-100 text-green-700' };
+    if (product.stock_quantity <= 3) return { text: `${product.stock_quantity} st kvar`, className: 'bg-red-100 text-red-700' };
+    return { text: `${product.stock_quantity} st i lager`, className: 'bg-amber-100 text-amber-700' };
   };
 
   const stockLabel = getStockLabel();
@@ -107,6 +106,11 @@ export function ProductCard({ product }: ProductCardProps) {
               ✨ Nyhet
             </span>
           )}
+          {stockLabel && (
+            <span className={`absolute bottom-2 left-2 px-2 py-0.5 rounded-full text-xs font-medium ${stockLabel.className}`}>
+              {stockLabel.text}
+            </span>
+          )}
         </div>
         <CardContent className="p-4">
           <h3 className="font-display font-semibold text-sm sm:text-lg mb-1">
@@ -116,11 +120,6 @@ export function ProductCard({ product }: ProductCardProps) {
             <p className="text-xs sm:text-sm text-muted-foreground mb-2">
               {product.description}
             </p>
-          )}
-          {stockLabel && (
-            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${stockLabel.className}`}>
-              {stockLabel.text}
-            </span>
           )}
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col shrink-0">
