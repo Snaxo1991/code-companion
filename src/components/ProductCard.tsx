@@ -113,9 +113,14 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
           {product.description && (
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-2">
               {product.description}
             </p>
+          )}
+          {stockLabel && (
+            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${stockLabel.className}`}>
+              {stockLabel.text}
+            </span>
           )}
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col shrink-0">
@@ -129,7 +134,11 @@ export function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
 
-            {isBillysDeal ? (
+            {!product.in_stock ? (
+              <Button size="sm" disabled className="opacity-50">
+                Slut
+              </Button>
+            ) : isBillysDeal ? (
               <div className="flex items-center gap-2">
                 {billysInCart > 0 && (
                   <span className="w-6 text-center font-semibold">{billysInCart}</span>
