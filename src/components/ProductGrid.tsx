@@ -7,7 +7,7 @@ import { Search, Loader2, LayoutGrid, List } from 'lucide-react';
 import { ProductCategory, CATEGORY_LABELS } from '@/types/database';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const categories: (ProductCategory | 'all')[] = ['all', 'drycker', 'fryst', 'snacks', 'deals'];
+const categories: (ProductCategory | 'all')[] = ['all', 'drycker', 'fryst', 'snacks'];
 
 export function ProductGrid() {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>('all');
