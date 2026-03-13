@@ -102,6 +102,9 @@ export function ProductCard({ product }: ProductCardProps) {
           <span className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeClass(product.category)}`}>
             {CATEGORY_LABELS[product.category]}
           </span>
+          <span className={`absolute bottom-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${stockInfo.className}`}>
+            {stockInfo.text}
+          </span>
           {product.is_popular && (
             <span className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
               ✨ Nyhet
