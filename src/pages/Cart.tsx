@@ -8,8 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Layout } from '@/components/Layout';
 import { CartItem } from '@/components/CartItem';
 import { UpsellDialog } from '@/components/UpsellDialog';
-import { useCart } from '@/hooks/useCart';
-import { 
+import { useCart, ADDON_OPTIONS, ADDON_PRICE } from '@/hooks/useCart';
   DeliveryArea, 
   DeliverySpeed,
   DELIVERY_AREA_LABELS, 
