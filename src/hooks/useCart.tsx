@@ -42,6 +42,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_STORAGE_KEY = 'snaxo-cart';
 const DELIVERY_AREA_KEY = 'snaxo-delivery-area';
 const DELIVERY_SPEED_KEY = 'snaxo-delivery-speed';
+const ADDON_KEY = 'snaxo-addon';
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
