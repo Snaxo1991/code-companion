@@ -113,10 +113,16 @@ export default function Checkout() {
         p_delivery_area_id: deliveryAreaId,
         p_delivery_speed: deliverySpeed,
         p_notes: formData.notes?.trim() || null,
-        p_items: items.map(item => ({
-          product_id: item.product.id,
-          quantity: item.quantity
-        }))
+        p_items: [
+          ...items.map(item => ({
+            product_id: item.product.id,
+            quantity: item.quantity
+          })),
+          ...(selectedAddon ? [{
+            product_id: selectedAddon,
+            quantity: 1
+          }] : [])
+        ]
       });
 
       if (orderError) {
