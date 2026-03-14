@@ -291,6 +291,15 @@ export default function Checkout() {
                       <span>{(item.product.price * item.quantity).toFixed(0)} kr</span>
                     </div>
                   ))}
+                  {selectedAddon && (() => {
+                    const addon = ADDON_OPTIONS.find(a => a.id === selectedAddon);
+                    return addon ? (
+                      <div className="flex justify-between text-sm">
+                        <span>1x {addon.name} (godbit)</span>
+                        <span>{ADDON_PRICE} kr</span>
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
 
                 <div className="border-t border-border pt-4 space-y-2">
