@@ -22,7 +22,7 @@ import {
 export default function Cart() {
   const navigate = useNavigate();
   const [showUpsell, setShowUpsell] = useState(false);
-  const { items, subtotal, billysDiscount, deliveryArea, setDeliveryArea, deliverySpeed, setDeliverySpeed, deliveryFee, priorityFee, total } = useCart();
+  const { items, subtotal, billysDiscount, deliveryArea, setDeliveryArea, deliverySpeed, setDeliverySpeed, deliveryFee, priorityFee, total, selectedAddon, setSelectedAddon, addonFee } = useCart();
 
   if (items.length === 0) {
     return (
