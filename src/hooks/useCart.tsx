@@ -79,6 +79,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return 'standard';
   });
 
+  const [selectedAddon, setSelectedAddon] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(ADDON_KEY);
+    }
+    return null;
+  });
+
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
