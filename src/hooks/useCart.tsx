@@ -1,6 +1,21 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CartItem, Product, DeliveryArea, DeliverySpeed, DELIVERY_FEES, PRIORITY_FEE } from '@/types/database';
 
+export interface AddonOption {
+  id: string;
+  name: string;
+  image_url: string;
+}
+
+export const ADDON_OPTIONS: AddonOption[] = [
+  { id: 'bdc6e318-bfe4-4e5e-b59b-b94c87565484', name: 'Cloetta (Sportlunch)', image_url: '/products/cloetta-sportlunch.png' },
+  { id: '794908af-d262-4b07-a94d-ae4f99ed528b', name: 'Delicato (Brownie)', image_url: '/products/delicato-brownie.png' },
+  { id: '29a0848a-a86c-4077-bf50-a3dc5eafcdb8', name: 'Delicato (Delicatoboll)', image_url: '/products/delicatoboll.png' },
+  { id: '9b588009-d610-44cc-97ed-909c0a12c7ff', name: 'Bounty', image_url: '/products/bounty.png' },
+];
+
+export const ADDON_PRICE = 4;
+
 interface CartContextType {
   items: CartItem[];
   addItem: (product: Product) => void;
@@ -17,6 +32,9 @@ interface CartContextType {
   deliveryFee: number;
   priorityFee: number;
   total: number;
+  selectedAddon: string | null;
+  setSelectedAddon: (addonId: string | null) => void;
+  addonFee: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -24,6 +42,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_STORAGE_KEY = 'snaxo-cart';
 const DELIVERY_AREA_KEY = 'snaxo-delivery-area';
 const DELIVERY_SPEED_KEY = 'snaxo-delivery-speed';
+const ADDON_KEY = 'snaxo-addon';
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
@@ -58,6 +77,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return (saved as DeliverySpeed) || 'standard';
     }
     return 'standard';
+  });
+
+  const [selectedAddon, setSelectedAddon] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(ADDON_KEY);
+    }
+    return null;
   });
 
   useEffect(() => {
@@ -124,7 +150,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const deliveryFee = deliveryArea && DELIVERY_FEES[deliveryArea] ? DELIVERY_FEES[deliveryArea] : 0;
   const priorityFee = deliverySpeed === 'priority' ? PRIORITY_FEE : 0;
-  const total = subtotal - billysDiscount + deliveryFee + priorityFee;
+  const addonFee = selectedAddon ? ADDON_PRICE : 0;
+  const total = subtotal - billysDiscount + deliveryFee + priorityFee + addonFee;
+
+  useEffect(() => {
+    if (selectedAddon) {
+      localStorage.setItem(ADDON_KEY, selectedAddon);
+    } else {
+      localStorage.removeItem(ADDON_KEY);
+    }
+  }, [selectedAddon]);
 
   return (
     <CartContext.Provider
@@ -144,6 +179,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         deliveryFee,
         priorityFee,
         total,
+        selectedAddon,
+        setSelectedAddon,
+        addonFee,
       }}
     >
       {children}

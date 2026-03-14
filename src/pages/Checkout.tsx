@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Layout } from '@/components/Layout';
-import { useCart } from '@/hooks/useCart';
+import { useCart, ADDON_OPTIONS, ADDON_PRICE } from '@/hooks/useCart';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { DELIVERY_SPEED_TIMES, DeliveryArea } from '@/types/database';
@@ -20,7 +20,7 @@ const AREA_NAME_MAP: Record<DeliveryArea, string> = {
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { items, subtotal, billysDiscount, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart } = useCart();
+  const { items, subtotal, billysDiscount, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart, selectedAddon, addonFee, setSelectedAddon } = useCart();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryAreaId, setDeliveryAreaId] = useState<string | null>(null);
@@ -112,7 +112,10 @@ export default function Checkout() {
         p_delivery_address: formData.address.trim(),
         p_delivery_area_id: deliveryAreaId,
         p_delivery_speed: deliverySpeed,
-        p_notes: formData.notes?.trim() || null,
+        p_notes: [
+          formData.notes?.trim(),
+          selectedAddon ? `Godbit (+${ADDON_PRICE} kr): ${ADDON_OPTIONS.find(a => a.id === selectedAddon)?.name}` : null
+        ].filter(Boolean).join(' | ') || null,
         p_items: items.map(item => ({
           product_id: item.product.id,
           quantity: item.quantity
@@ -165,6 +168,7 @@ export default function Checkout() {
 
       // Clear cart and redirect to confirmation
       clearCart();
+      setSelectedAddon(null);
       navigate(`/order-bekraftelse?order=${orderData.id}`);
       
     } catch (error) {
@@ -284,6 +288,15 @@ export default function Checkout() {
                       <span>{(item.product.price * item.quantity).toFixed(0)} kr</span>
                     </div>
                   ))}
+                  {selectedAddon && (() => {
+                    const addon = ADDON_OPTIONS.find(a => a.id === selectedAddon);
+                    return addon ? (
+                      <div className="flex justify-between text-sm">
+                        <span>1x {addon.name} (godbit)</span>
+                        <span>{ADDON_PRICE} kr</span>
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
 
                 <div className="border-t border-border pt-4 space-y-2">
@@ -305,6 +318,12 @@ export default function Checkout() {
                     <div className="flex justify-between text-sm">
                       <span>Prioritering ({DELIVERY_SPEED_TIMES.priority})</span>
                       <span>{priorityFee} kr</span>
+                    </div>
+                  )}
+                  {addonFee > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span>Godbit</span>
+                      <span>{addonFee} kr</span>
                     </div>
                   )}
                   {deliverySpeed === 'standard' && (
