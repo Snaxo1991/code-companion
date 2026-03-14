@@ -323,6 +323,12 @@ export default function Checkout() {
                       <span>{priorityFee} kr</span>
                     </div>
                   )}
+                  {addonFee > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span>Godbit</span>
+                      <span>{addonFee} kr</span>
+                    </div>
+                  )}
                   {deliverySpeed === 'standard' && (
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>Leveranstid</span>
