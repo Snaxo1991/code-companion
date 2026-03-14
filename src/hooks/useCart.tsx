@@ -150,7 +150,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const deliveryFee = deliveryArea && DELIVERY_FEES[deliveryArea] ? DELIVERY_FEES[deliveryArea] : 0;
   const priorityFee = deliverySpeed === 'priority' ? PRIORITY_FEE : 0;
-  const total = subtotal - billysDiscount + deliveryFee + priorityFee;
+  const addonFee = selectedAddon ? ADDON_PRICE : 0;
+  const total = subtotal - billysDiscount + deliveryFee + priorityFee + addonFee;
+
+  useEffect(() => {
+    if (selectedAddon) {
+      localStorage.setItem(ADDON_KEY, selectedAddon);
+    } else {
+      localStorage.removeItem(ADDON_KEY);
+    }
+  }, [selectedAddon]);
 
   return (
     <CartContext.Provider
@@ -170,6 +179,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         deliveryFee,
         priorityFee,
         total,
+        selectedAddon,
+        setSelectedAddon,
+        addonFee,
       }}
     >
       {children}
