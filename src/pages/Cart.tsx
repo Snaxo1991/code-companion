@@ -50,6 +50,36 @@ export default function Cart() {
             {items.map(item => (
               <CartItem key={item.product.id} item={item} />
             ))}
+
+            {/* Addon selector */}
+            <div className="mt-6 bg-card rounded-xl p-5 border border-border">
+              <h3 className="font-display text-lg font-bold mb-1">🍫 Lägg till en godbit för +{ADDON_PRICE} kr</h3>
+              <p className="text-sm text-muted-foreground mb-4">Välj max 1 produkt</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {ADDON_OPTIONS.map(addon => {
+                  const isSelected = selectedAddon === addon.id;
+                  return (
+                    <button
+                      key={addon.id}
+                      onClick={() => setSelectedAddon(isSelected ? null : addon.id)}
+                      className={`relative rounded-lg border-2 p-3 transition-all text-center ${
+                        isSelected 
+                          ? 'border-primary bg-primary/10 ring-1 ring-primary' 
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <img src={addon.image_url} alt={addon.name} className="h-16 w-16 mx-auto object-contain mb-2" />
+                      <span className="text-xs font-medium leading-tight block">{addon.name}</span>
+                      {isSelected && (
+                        <div className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
+                          <span className="text-[10px] text-primary-foreground font-bold">✓</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Order summary */}
