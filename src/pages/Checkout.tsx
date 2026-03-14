@@ -171,6 +171,7 @@ export default function Checkout() {
 
       // Clear cart and redirect to confirmation
       clearCart();
+      setSelectedAddon(null);
       navigate(`/order-bekraftelse?order=${orderData.id}`);
       
     } catch (error) {
