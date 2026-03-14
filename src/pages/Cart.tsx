@@ -164,6 +164,12 @@ export default function Cart() {
                     <span>{priorityFee} kr</span>
                   </div>
                 )}
+                {addonFee > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span>Godbit (+{ADDON_PRICE} kr)</span>
+                    <span>{addonFee} kr</span>
+                  </div>
+                )}
                 <div className="border-t border-border pt-2 flex justify-between font-display font-bold text-lg">
                   <span>Totalt</span>
                   <span className="text-primary">{total.toFixed(0)} kr</span>
