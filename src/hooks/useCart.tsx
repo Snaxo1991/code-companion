@@ -8,10 +8,10 @@ export interface AddonOption {
 }
 
 export const ADDON_OPTIONS: AddonOption[] = [
-  { id: 'bdc6e318-bfe4-4e5e-b59b-b94c87565484', name: 'Cloetta (Sportlunch)', image_url: '/products/cloetta-sportlunch.png' },
-  { id: '794908af-d262-4b07-a94d-ae4f99ed528b', name: 'Delicato (Brownie)', image_url: '/products/delicato-brownie.png' },
-  { id: '29a0848a-a86c-4077-bf50-a3dc5eafcdb8', name: 'Delicato (Delicatoboll)', image_url: '/products/delicatoboll.png' },
-  { id: '9b588009-d610-44cc-97ed-909c0a12c7ff', name: 'Bounty', image_url: '/products/bounty.png' },
+  { id: 'bdc6e318-bfe4-4e5e-b59b-b94c87565484', name: 'Cloetta (Sportlunch Dubbel)', image_url: 'https://image2url.com/r2/default/images/1769453451378-6d01633c-cc0f-4e70-ad7f-6a1355d39fb8.png' },
+  { id: '794908af-d262-4b07-a94d-ae4f99ed528b', name: 'Delicato (Brownie Singelpack)', image_url: 'https://image2url.com/r2/default/images/1769453510756-fadb800b-87bd-4d12-bea9-a173898eea26.png' },
+  { id: '29a0848a-a86c-4077-bf50-a3dc5eafcdb8', name: 'Delicato (Delicatoboll Singelpack)', image_url: 'https://image2url.com/r2/default/images/1769455709399-4319611c-7aab-4d31-93bc-60f9b92a344d.png' },
+  { id: '9b588009-d610-44cc-97ed-909c0a12c7ff', name: 'Bounty (Kokos Chokladbar)', image_url: 'https://image2url.com/r2/default/images/1769454907750-3d90a627-6609-4251-a0dc-c0ccbb5bf188.png' },
 ];
 
 export const ADDON_PRICE = 4;
