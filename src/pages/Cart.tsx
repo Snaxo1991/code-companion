@@ -9,6 +9,7 @@ import { Layout } from '@/components/Layout';
 import { CartItem } from '@/components/CartItem';
 import { UpsellDialog } from '@/components/UpsellDialog';
 import { useCart, ADDON_OPTIONS, ADDON_PRICE } from '@/hooks/useCart';
+import { 
   DeliveryArea, 
   DeliverySpeed,
   DELIVERY_AREA_LABELS, 
