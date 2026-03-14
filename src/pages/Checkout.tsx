@@ -20,7 +20,7 @@ const AREA_NAME_MAP: Record<DeliveryArea, string> = {
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { items, subtotal, billysDiscount, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart } = useCart();
+  const { items, subtotal, billysDiscount, deliveryArea, deliverySpeed, deliveryFee, priorityFee, total, clearCart, selectedAddon, addonFee, setSelectedAddon } = useCart();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryAreaId, setDeliveryAreaId] = useState<string | null>(null);
